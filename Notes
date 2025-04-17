@@ -1,0 +1,620 @@
+DevOps Basics
+
+Version Control
+
+CI/CD - GitHub Actions
+
+Structure
+
+Runner - Self Hosted & GitHub Hosted
+
+Events
+
+Actions Marketplace
+
+Variables - Expressions, conditions
+
+Security - Environments
+
+Parallel Builds, Matrix Builds
+
+------------------------------------------
+
+Import
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+DevOps: a practice where we have CI/CD in place , automation
+-> Combination of Dev & Ops
+
+1) Shared Goal
+2) Automation
+3) Continuous Model:
+	Continuous Development - Manage Source Code - Effectively tracking changes ( Who, What, Why, How ) - Version Control Tools
+		=> Transparency, Recover from errors, Auditing
+		Ex: Git ( GitHub, GitLab, BitBucket, ), SVN , CVS, Mercurial, Bazaar
+	Continuous Testing - Automated Testing Tools
+		Ex: Selenium, Appium, Cucumber, Junit, TestNG, OWASP ZAP, HP WebInspect, Fortify
+	Continuous Integration - 
+		Existing Code ( Version 1 ) - This is working fine ==> Developers will be doing some changes - if end user wants to utilize the new functionality - then new changes has to be integrated / added to the existing functionality --> to ensure there are no compatibility issues between new code & old code ->  we will have to verify or we will have to perform lot of tests
+		Changes -> Compile -> Build & Package -> Unit Tests -> Integration Tests -> Security Testing -> Static Code Analyis ==> by automating these steps, you are providing a smooth transition for the changes to reach the end user
+		Faster releases, Increases Quality
+		Ex: Jenkins, GitHub Actions, GitLab CI/CD, Travis CI, Bamboo, Circle CI, AWS CodePipeline, Azure Pipelines
+	Continuous Delivery / Deployment - If Manual approval is needed for releasing your code - Delivery . If release process is automated - Deployment
+		IAC -
+			Infrastructure Provisioning - Terraform, AWS CF , ARM , Crossplane, Pulumi, OpenTofu
+			Configuration Management Tools - Ansible, Chef, Puppet, Saltstack
+			Container / Container Orchestration - Docker, Podman, rkt / Kubernetes , OpenShift, Apache Mesos, Docker Swarm
+	Continuous Monitoring - analyze the functionality
+		Ex: Nagios, Prometheus, Grafana, CloudWatch, Dynatrace, Datadog
+
+
+MTTR
+Deployment frequency
+Change failure rate
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Version Control: Timeline of your code
+
+Centralized
+Distributed
+
+Git: 
+-> Distributed Version Control
+-> User-friendly
+-> Open-source
+-> tracks your changes - commits
+-> branching & merging 
+-> Secure
+
+GitHub:
+
+
+Commands:
+git status - we can see the status of repository
+git add -
+git init - initialize your repo
+git clone 
+git commit 
+git branch
+git checkout
+git merge
+git push
+git pull
+git log
+
+Working Directory: 
+Staging Area: 
+Local Repo: 
+
+
+Jenkins:
+Jobs - Freestyle, Pipeline ( Clone, test , trigger ) - set of instructions , stages , node configuration, post - build actions 
+
+Declarative & Scripted
+
+pipeline {
+
+environment {
+
+}
+
+agent any
+
+stages {
+	stage ("Clone"){
+		steps {
+		}
+	}
+	stage ("Build"){
+		steps {
+		}
+	}
+}
+
+}
+
+.github/workflows
+
+Events -> Workflow ( YAML ) -> Jobs -> steps
+
+when to execute
+where to execute
+what to execute
+
+
+1) You should have your own GitHub Account
+2) You create a new repository
+3) (Optional) If you want to practice git commands, make sure git is installed, use git commands to push some data to the newly created repository
+4) Navigate to Actions -> configure a simple workflow
+5) Observe the Execution
+
+
+=================================================================================================================
+
+=================================================================================================================
+
+GitHub Actions provides two types of runners to execute workflows: GitHub-hosted runners and self-hosted runners. Each type has its own use cases, benefits, and limitations.
+
+1. GitHub-Hosted Runners
+GitHub-hosted runners are virtual machines provided by GitHub. They come pre-configured with a set of tools and software, and GitHub manages their maintenance, updates, and security.
+
+Features and Benefits
+	Ease of Use: No need to set up or maintain infrastructure. GitHub handles all the maintenance.
+	Up-to-Date: GitHub regularly updates the runners with the latest software and tools.
+	Scalability: Automatically scales with your workload. GitHub allocates and manages resources as needed.
+	Security: GitHub ensures that runners are patched and secured.
+Limitations
+	Limited Customization: Customizing the environment is limited to what is provided by GitHub.
+	Ephemeral Storage: Each job runs in a fresh environment. Any data not saved externally is lost after the job completes.
+
+GitHub provides hosted runners with various operating systems:
+	ubuntu-latest
+	windows-latest
+	macos-latest
+
+2. Self-Hosted Runners
+Self-hosted runners are machines or virtual machines that you set up and manage yourself. You install the GitHub Actions runner application on these machines.
+
+Features and Benefits
+	Customization: Full control over the environment. You can install specific tools and software that are required for your builds.
+	Resource Control: Use your own infrastructure and resources, potentially reducing costs if you have spare capacity.
+	Extended Storage: Persistent storage available on the machine, useful for large data or caching needs.
+Limitations
+	Maintenance: You are responsible for maintaining the hardware and software. This includes updates, security patches, and troubleshooting.
+	Scaling: You need to manage scaling and capacity. You may need to set up multiple runners and handle their provisioning.
+Usage
+	You set up a self-hosted runner by following these steps:
+
+Register a Self-Hosted Runner:
+
+Go to your GitHub repository.
+	Navigate to "Settings" > "Actions" > "Runners".
+	Click "New self-hosted runner" and follow the instructions to download and configure the runner on your machine.
+
+Configure the Runner:
+	Run the configuration script provided by GitHub to register the runner with your repository.
+	Start the runner application.
+
+Use the Self-Hosted Runner:
+	Specify the self-hosted runner in your workflow configuration
+
+Choosing Between GitHub-Hosted and Self-Hosted Runners
+	Use GitHub-Hosted Runners if you prefer a managed solution with minimal setup and maintenance, and if the provided environments meet your needs.
+	Use Self-Hosted Runners if you need specific software or configurations, require persistent storage, or want to leverage existing infrastructure.
+
+Managing Self-Hosted Runners
+	Security: Regularly update and patch the operating system and software on your self-hosted runners.
+	Monitoring: Implement monitoring and logging to keep track of runner performance and health.
+	Scaling: Plan for scaling by setting up multiple runners or using autoscaling mechanisms if needed.
+
+Official LINK : https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners
+
+=================================================================================================================
+
+=================================================================================================================
+
+External triggers for GitHub Actions workflows allow you to initiate workflows from outside GitHub's typical events like push or pull_request. This can be particularly useful for integrating GitHub Actions with other systems or automating tasks that aren't directly tied to GitHub events.
+
+GitHub Action Events:
+1) Push Events
+	Trigger: When code is pushed to a branch
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v1.*
+
+Use Cases: Running tests or deployments whenever changes are made to specific branches or tags.
+
+2) Pull Request Events
+	Trigger: When a pull request is opened, synchronized, or closed
+
+on:
+  pull_request:
+    branches:
+      - main
+
+Use Cases: Testing changes before they are merged into the main branch, running code reviews, or enforcing coding standards.
+
+3)  Issues Events
+	Trigger: When an issue is opened, edited, closed, or labeled.
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - closed
+
+Use Cases: Automating responses to issue changes, labeling issues, or triggering workflows based on issue state.
+
+4) Issue Comment Events
+	Trigger: When a comment is added to an issue or pull request.
+
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+
+Use Cases: Automating responses to comments or triggering workflows based on comment content.
+
+5)Fork Events
+	Trigger: When a repository is forked.
+
+on:
+  fork:
+
+Use Cases: Running workflows to initialize or configure a forked repository.
+
+6) Watch Events
+	Trigger: When a user stars a repository.
+
+on:
+  watch:
+
+Use Cases: Tracking repository interest or engagement.
+
+7) Workflow Events
+	Trigger: When a workflow run is triggered or completed.
+
+on:
+  workflow_run:
+    workflows: ["Other Workflow"]
+    types:
+      - completed
+
+Use Cases: Triggering workflows based on the completion of other workflows. Improves Reusability, reducing complexity
+
+8) Schedule Events
+	Trigger: Based on a cron-like schedule.
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+Use Cases: Running workflows at regular intervals, such as nightly builds or monthly reports.
+
+9) Repository Dispatch Events
+	Trigger: Manually dispatching an event via the GitHub API.
+
+on:
+  repository_dispatch:
+
+Use Cases: Triggering workflows from external systems or scripts.
+
+10) Workflow Dispatch Events
+	Trigger: Manually triggering a workflow via the GitHub Actions UI or API.
+
+on:
+  workflow_dispatch:
+    inputs:
+      example:
+        description: 'An example input'
+        required: true
+        default: 'example'
+
+Use Cases: Allowing users to manually start workflows with custom inputs.
+
+11) Pages Events
+	Trigger: When GitHub Pages builds or deploys a site.
+
+on:
+  pages:
+
+Use Cases: Automating tasks related to GitHub Pages deployments.
+
+12) Security Events
+	Trigger: When a security alert is created or resolved.
+
+on:
+  security_advisory:
+    types:
+      - created
+      - resolved
+
+Use Cases: Automating responses to security vulnerabilities or advisories.
+
+=================================================================================================================
+
+=================================================================================================================
+
+Filter pattern 
+
+You can use special characters in path, branch, and tag filters.
+
+*: Matches zero or more characters, but does not match the / character. For example, Octo* matches Octocat.
+**: Matches zero or more of any character.
+?: Matches zero or one of the preceding character.
++: Matches one or more of the preceding character.
+[] Matches one alphanumeric character listed in the brackets or included in ranges. Ranges can only include a-z, A-Z, and 0-9. For example, the range[0-9a-z] matches any digit or lowercase letter. For example, [CB]at matches Cat or Bat and [1-2]00 matches 100 and 200.
+!: At the start of a pattern makes it negate previous positive patterns. It has no special meaning if not the first character.
+The characters *, [, and ! are special characters in YAML. If you start a pattern with *, [, or !, you must enclose the pattern in quotes. Also, if you use a flow sequence with a pattern containing [ and/or ], the pattern must be enclosed in quotes.
+
+# Valid
+paths:
+  - '**/README.md'
+
+# Invalid - creates a parse error that
+# prevents your workflow from running.
+paths:
+  - **/README.md
+
+# Valid
+branches: [ main, 'release/v[0-9].[0-9]' ]
+
+# Invalid - creates a parse error
+branches: [ main, release/v[0-9].[0-9] ]
+
+=================================================================================================================
+
+=================================================================================================================
+
+Patterns to match branches and tags
+
+feature/*	
+The * wildcard matches any character, but does not match slash (/).	
+feature/my-branch
+feature/your-branch
+
+
+feature/**	
+The ** wildcard matches any character including slash (/) in branch and tag names.	
+feature/beta-a/my-branch
+feature/your-branch
+feature/mona/the/octocat
+
+main
+releases/mona-the-octocat	
+Matches the exact name of a branch or tag name.	
+main
+releases/mona-the-octocat
+
+'*'	
+Matches all branch and tag names that don't contain a slash (/). The * character is a special character in YAML. When you start a pattern with *, you must use quotes.	
+main
+releases
+
+'**'
+Matches all branch and tag names. This is the default behavior when you don't use a branches or tags filter.	
+all/the/branches
+every/tag
+
+'*feature'
+The * character is a special character in YAML. When you start a pattern with *, you must use quotes.	
+mona-feature
+feature
+ver-10-feature
+
+v2*	
+Matches branch and tag names that start with v2.	v2
+v2.0
+v2.9]
+
+v[12].[0-9]+.[0-9]+
+Matches all semantic versioning branches and tags with major version 1 or 2.	
+v1.10.1
+v2.0.0
+
+=================================================================================================================
+
+=================================================================================================================
+
+Patterns to match file paths
+Path patterns must match the whole path, and start from the repository's root.
+
+
+'*'	
+The * wildcard matches any character, but does not match slash (/). The * character is a special character in YAML. When you start a pattern with *, you must use quotes.	
+README.md
+server.rb
+
+'*.jsx?'
+The ? character matches zero or one of the preceding character.	
+page.js
+page.jsx
+
+'**'	
+The ** wildcard matches any character including slash (/). This is the default behavior when you don't use a path filter.	
+all/the/files.md
+
+'*.js'	
+The * wildcard matches any character, but does not match slash (/). Matches all .js files at the root of the repository.	
+app.js
+index.js
+
+'**.js'	
+Matches all .js files in the repository.	
+index.js
+js/index.js
+src/js/app.js
+
+docs/*	
+All files within the root of the docs directory, at the root of the repository.	
+docs/README.md
+docs/file.txt
+
+docs/**	
+Any files in the /docs directory at the root of the repository.	
+docs/README.md
+docs/mona/octocat.txt
+
+docs/**/*.md	
+A file with a .md suffix anywhere in the docs directory.	
+docs/README.md
+docs/mona/hello-world.md
+docs/a/markdown/file.md
+
+'**/docs/**'
+Any files in a docs directory anywhere in the repository.
+docs/hello.md
+dir/docs/my-file.txt
+space/docs/plan/space.doc
+
+'**/README.md'	
+A README.md file anywhere in the repository.
+README.md
+js/README.md
+
+'**/*src/**'
+Any file in a folder with a src suffix anywhere in the repository.
+a/src/app.js
+my-src/code/js/app.js
+
+'**/*-post.md'
+A file with the suffix -post.md anywhere in the repository.
+my-post.md
+path/their-post.md
+
+'**/migrate-*.sql'
+A file with the prefix migrate- and suffix .sql anywhere in the repository.
+migrate-10909.sql
+db/migrate-v1.0.sql
+db/sept/migrate-v1.sql
+
+========================================================================================
+
+========================================================================================
+
+Predefined Environment Variables:
+GitHub provides a set of built-in environment variables that you can use within your workflows. These variables help you access details about the repository, the runner environment, and the current workflow execution.
+
+Common GitHub Actions Predefined Environment Variables:
+	
+GITHUB_REPOSITORY	The owner and repository name (e.g., octocat/Hello-World).
+GITHUB_SHA		The commit SHA (hash) that triggered the workflow.
+GITHUB_REF		The branch or tag ref that triggered the workflow (e.g., refs/heads/main).
+GITHUB_RUN_ID		A unique identifier for the workflow run (e.g., 12345).
+GITHUB_WORKFLOW		The name of the workflow as defined in the workflow.yml file.
+GITHUB_ACTOR		The name of the person or app that initiated the workflow (e.g., octocat).
+GITHUB_EVENT_NAME	The name of the event that triggered the workflow (e.g., push, pull_request).
+GITHUB_EVENT_PATH	The path to the file that contains the webhook payload (JSON).
+GITHUB_WORKSPACE	The directory on the runner where the repository is checked out.
+GITHUB_TOKEN		A token automatically generated by GitHub Actions that can be used to authenticate on behalf of the GitHub Actions app.
+
+========================================================================================
+
+========================================================================================
+
+Job dependencies are a way to define the relationships between different jobs in a workflow, specifying the order in which they should run. In CI/CD pipelines or job scheduling, jobs often need to run in a particular sequence based on the success or failure of previous jobs. 
+
+Defining Job Dependencies using needs:
+meaning a job will only run after its dependencies have completed successfully.
+
+Benefits of Parallel vs. Sequential Execution:
+
+Parallel Execution:
+Faster execution of jobs as multiple jobs are running at the same time.
+Ideal when jobs are independent and do not need to wait for each other.
+
+When to Use Parallel Execution:
+When jobs are independent and do not depend on the results of other jobs.
+For testing or building code on multiple operating systems at once.
+When you have multiple tasks (e.g., linting, building ) that can be executed without waiting for each other.
+
+Sequential Execution:
+Ensures that jobs are executed in a specific order.
+Necessary when one job's outcome is needed for the next job (e.g., build -> test -> deploy).
+
+When to Use Sequential Execution:
+When one job or step depends on the completion of another. For example, building code before running tests, or deploying after testing has passed.
+When managing dependencies, such as running a setup job before the build or using deployment jobs that depend on successful build jobs.
+To ensure that jobs are executed in a specific order (e.g., building, testing, then deploying).
+
+========================================================================================
+
+What is a Matrix Build?
+A matrix build allows you to define multiple combinations of parameters (such as different Node.js versions, OS platforms, or Python versions) and then automatically run jobs across those combinations. Each job runs in parallel with others, making your CI/CD pipeline more efficient by testing your code against various environments at the same time.
+
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    node-version: [14, 16, 18]
+
+Fail Fast (with fail-fast):
+The fail-fast option allows you to stop all jobs in the matrix as soon as one of the jobs fails. This can be useful to save resources and time, especially when running multiple jobs in parallel, and you want to stop further unnecessary runs once a failure is detected.
+Default behavior: All jobs run to completion unless explicitly cancelled or stopped.
+
+strategy:
+  fail-fast: true  # Stop matrix jobs as soon as one fails
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    node-version: [14, 16, 18]
+
+
+Concurrency: Control the number of jobs that can run at the same time.
+
+
+Conditional Execution: Use if to control the execution of steps or jobs.
+
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    node-version: [14, 16, 18]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check Node version
+        run: node -v
+      - name: Run tests
+        run: npm test
+        if: ${{ matrix.node-version == '16' }}  # Only run tests for Node 16
+
+Use Cases for if Conditional Execution:
+Running jobs on specific branches or tags: Run deployments only on main or other specific branches.
+if: github.ref == 'refs/heads/main'
+
+Running tests based on event types: For example, only run tests for pull requests (pull_request) and not for pushes.
+if: github.event_name == 'pull_request'
+
+Selective steps in matrix jobs: Run certain steps based on specific matrix configurations (e.g., Node.js version).
+if: ${{ matrix.node-version == '16' }} 
+
+Handling job failures or successes: Execute cleanup or notification steps depending on whether a previous job succeeded or failed.
+if: success()
+if: failure()
+
+Customizable Job Steps: Adjust steps dynamically using matrix parameters.
+
+Include/Exclude: Control which combinations in the matrix should be included or excluded.
+
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    node-version: [14, 16, 18]
+    include:
+      - os: ubuntu-latest
+        node-version: 14
+      - os: windows-latest
+        node-version: 16
+    exclude:
+      - os: macos-latest
+        node-version: 14  # Exclude this combination
+
+Key Benefits of Using Matrix Builds:
+Parallel Testing: Run tests in parallel across multiple configurations, reducing the overall time it takes to validate your code.
+Cross-Platform Validation: Ensure your application works across various environments (OS, Node versions, browsers, etc.).
+Comprehensive Coverage: Test all relevant combinations of your application's dependencies, configurations, and environments to ensure compatibility and stability.
+Efficiency: Instead of writing separate jobs for each configuration, matrix builds allow you to define them once and have them run in parallel, saving time and effort in managing CI/CD workflows.
+
+Common use cases for matrix builds
+Testing Across Multiple Node.js Versions
+Testing Across Multiple Operating Systems
+Testing on Multiple Python Versions
+Running Tests on Multiple Browsers (Cross-browser Testing)
+Testing with Different Database Versions
+Testing Different Build Configurations
+Running Tests on Multiple Versions of a Frontend Framework
+Testing on Different Versions of a Dependency
+Running on Different Versions of a Docker Image
+
+========================================================================================
+
+workflow_run: This event allows you to trigger one workflow after another workflow completes. It's typically used for triggering workflows that depend on the result of a previous workflow.
+
+workflow_call: This allows workflows to be reused by calling them from another workflow, making your CI/CD pipeline more modular and reducing redundancy. It allows you to pass inputs to the called workflow and get more flexibility.
